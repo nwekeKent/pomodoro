@@ -2,9 +2,12 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
-import { useFont } from "@/hooks/useFont";
+import {
+	useFont,
+	type FontOption,
+	type ColorOption,
+} from "@/context/FontContext";
 import { NumberInput } from "./NumberInput";
-import type { FontOption, ColorOption } from "@/hooks/useFont";
 
 interface TimeOption {
 	title: string;
@@ -18,11 +21,31 @@ export const Modal = ({
 }) => {
 	const { activeFont, activeColor, handleFontChange, handleColorChange } =
 		useFont();
+
+	// Add state for temporary selections
+	const [selectedFont, setSelectedFont] = useState<FontOption>(activeFont);
+	const [selectedColor, setSelectedColor] = useState<ColorOption>(activeColor);
 	const [times, setTimes] = useState<TimeOption[]>([
 		{ title: "pomodoro", defaultTime: 25 },
 		{ title: "short break", defaultTime: 5 },
 		{ title: "long break", defaultTime: 15 },
 	]);
+
+	const applyChanges = () => {
+		handleFontChange(selectedFont || "mono");
+		handleColorChange(selectedColor || "red");
+		closeSettingsModal();
+		// window.location.reload();
+	};
+
+	// Update the click handlers
+	const handleFontSelect = (font: FontOption) => {
+		setSelectedFont(font);
+	};
+
+	const handleColorSelect = (color: ColorOption) => {
+		setSelectedColor(color);
+	};
 
 	const handleTimeChange = (index: number, newValue: number) => {
 		setTimes(prevTimes => {
@@ -89,11 +112,11 @@ export const Modal = ({
 								key={font}
 								style={{ fontFamily: `var(--font-${font})` }}
 								className={`w-10 h-10 rounded-[50%] flex justify-center items-center text-sm font-bold ${
-									activeFont === font
+									selectedFont === font
 										? "bg-secondary-navy-200 text-white"
 										: "bg-secondary-light-grey text-secondary-navy-100"
 								}`}
-								onClick={() => handleFontChange(font)}
+								onClick={() => handleFontSelect(font)}
 							>
 								Aa
 							</button>
@@ -111,13 +134,10 @@ export const Modal = ({
 							return (
 								<div
 									key={index}
-									className={`w-10 h-10 rounded-[50%] flex justify-center items-center bg-primary-${color}
-								
-									}`}
-									onClick={() => handleColorChange(color as ColorOption)}
+									className={`w-10 h-10 rounded-[50%] flex justify-center items-center bg-primary-${color}`}
+									onClick={() => handleColorSelect(color as ColorOption)}
 								>
-									{" "}
-									{activeColor === color && (
+									{selectedColor === color && (
 										<Image
 											src="/assets/icons/icon-tick.png"
 											width={15}
@@ -134,8 +154,11 @@ export const Modal = ({
 
 			<div className="absolute -bottom-[26.5px] left-0 right-0 flex justify-center">
 				<button
-					className="w-[140px] h-[53px] bg-primary-red hover:bg-primary-red/80 
-						text-white rounded-[26.5px] font-bold transition-colors"
+					onClick={applyChanges}
+					className={`w-[140px] h-[53px] bg-primary-${
+						activeColor || "red"
+					} hover:bg-primary-${activeColor || "red"}/80 
+						text-white rounded-[26.5px] font-bold transition-colors`}
 				>
 					Apply
 				</button>

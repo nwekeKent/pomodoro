@@ -1,6 +1,6 @@
 "use client";
 
-import { useFont } from "@/hooks/useFont";
+import { useFont } from "@/context/FontContext";
 import React, { useState, useEffect } from "react";
 
 export const Clock = () => {

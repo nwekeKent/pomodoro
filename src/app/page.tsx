@@ -2,7 +2,7 @@
 
 import { Clock } from "@/components/Clock";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
-import { useFont } from "@/hooks/useFont";
+import { useFont } from "@/context/FontContext";
 import { useState } from "react";
 import Image from "next/image";
 import { SettingsModal } from "@/components/settings/SettingsModal";

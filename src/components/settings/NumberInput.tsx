@@ -22,10 +22,36 @@ export function NumberInput({ value, onChange, min, max }: NumberInputProps) {
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newValue = parseInt(e.target.value);
+
+		// Allow empty input while typing
+		if (e.target.value === "") {
+			onChange(min || 0);
+			return;
+		}
+
+		// Validate number
 		if (isNaN(newValue)) return;
-		if (min !== undefined && newValue < min) return;
-		if (max !== undefined && newValue > max) return;
+
+		// Validate range
+		if (min !== undefined && newValue < min) {
+			onChange(min);
+			return;
+		}
+		if (max !== undefined && newValue > max) {
+			onChange(max);
+			return;
+		}
+
 		onChange(newValue);
+	};
+
+	const handleBlur = () => {
+		// Ensure value is within bounds when input loses focus
+		if (min !== undefined && value < min) {
+			onChange(min);
+		} else if (max !== undefined && value > max) {
+			onChange(max);
+		}
 	};
 
 	return (
@@ -36,8 +62,8 @@ export function NumberInput({ value, onChange, min, max }: NumberInputProps) {
 				pattern="[0-9]*"
 				value={value}
 				onChange={handleInputChange}
+				onBlur={handleBlur}
 				className="w-full h-10 bg-secondary-light-grey rounded-lg pl-4 pr-12 text-secondary-navy-200 font-bold focus:outline-none"
-				readOnly
 			/>
 			<div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-1">
 				<button

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useFont } from "@/hooks/useFont";
+import { useFont } from "@/context/FontContext";
 
 interface ModeSwitcherProps {
 	activeMode: string;

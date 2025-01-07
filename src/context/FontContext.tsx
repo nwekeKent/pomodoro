@@ -7,7 +7,9 @@ import {
 	useEffect,
 	ReactNode,
 } from "react";
-import type { FontOption, ColorOption } from "@/hooks/useFont";
+
+export type FontOption = "mono" | "kumbh" | "roboto" | null;
+export type ColorOption = "red" | "blue" | "purple" | null;
 
 interface FontContextType {
 	activeFont: FontOption;
@@ -36,13 +38,17 @@ export function FontProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	const handleFontChange = (newFont: FontOption) => {
-		setActiveFont(newFont);
-		localStorage.setItem("font", newFont);
+		if (newFont) {
+			setActiveFont(newFont);
+			localStorage.setItem("font", newFont);
+		}
 	};
 
 	const handleColorChange = (newColor: ColorOption) => {
-		setActiveColor(newColor);
-		localStorage.setItem("color", newColor);
+		if (newColor) {
+			setActiveColor(newColor);
+			localStorage.setItem("color", newColor);
+		}
 	};
 
 	return (
