@@ -9,33 +9,34 @@ import {
 } from "@/context/FontContext";
 import { NumberInput } from "./NumberInput";
 
-interface TimeOption {
-	title: string;
-	defaultTime: number;
-}
-
 export const Modal = ({
 	closeSettingsModal,
 }: {
 	closeSettingsModal: () => void;
 }) => {
-	const { activeFont, activeColor, handleFontChange, handleColorChange } =
-		useFont();
+	const {
+		activeFont,
+		activeColor,
+		times,
+		handleFontChange,
+		handleColorChange,
+		handleTimeChange,
+	} = useFont();
 
-	// Add state for temporary selections
 	const [selectedFont, setSelectedFont] = useState<FontOption>(activeFont);
 	const [selectedColor, setSelectedColor] = useState<ColorOption>(activeColor);
-	const [times, setTimes] = useState<TimeOption[]>([
-		{ title: "pomodoro", defaultTime: 25 },
-		{ title: "short break", defaultTime: 5 },
-		{ title: "long break", defaultTime: 15 },
-	]);
+
+	const timeSettings = [
+		{ title: "pomodoro" as const, defaultTime: times.pomodoro },
+		{ title: "short break" as const, defaultTime: times["short break"] },
+		{ title: "long break" as const, defaultTime: times["long break"] },
+	];
 
 	const applyChanges = () => {
 		handleFontChange(selectedFont || "mono");
 		handleColorChange(selectedColor || "red");
 		closeSettingsModal();
-		// window.location.reload();
+		window.location.reload();
 	};
 
 	// Update the click handlers
@@ -47,12 +48,9 @@ export const Modal = ({
 		setSelectedColor(color);
 	};
 
-	const handleTimeChange = (index: number, newValue: number) => {
-		setTimes(prevTimes => {
-			const newTimes = [...prevTimes];
-			newTimes[index] = { ...newTimes[index], defaultTime: newValue };
-			return newTimes;
-		});
+	const handleTimeUpdate = (index: number, newValue: number) => {
+		const mode = timeSettings[index].title;
+		handleTimeChange(mode, newValue);
 	};
 
 	const fonts: FontOption[] = ["kumbh", "roboto", "mono"];
@@ -82,7 +80,7 @@ export const Modal = ({
 					</h3>
 
 					<div className="grid md:grid-cols-3 gap-4">
-						{times.map((time, index) => (
+						{timeSettings.map((time, index) => (
 							<div
 								key={index}
 								className="flex md:flex-col gap-2 flex-row justify-between items-center md:justify-start md:items-start"
@@ -92,7 +90,7 @@ export const Modal = ({
 								</label>
 								<NumberInput
 									value={time.defaultTime}
-									onChange={value => handleTimeChange(index, value)}
+									onChange={value => handleTimeUpdate(index, value)}
 									min={1}
 									max={60}
 								/>

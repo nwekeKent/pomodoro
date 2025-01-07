@@ -4,13 +4,21 @@ import { useFont } from "@/context/FontContext";
 import React, { useState, useEffect } from "react";
 
 export const Clock = () => {
-	const { activeColor } = useFont();
-	const [timeLeft, setTimeLeft] = useState(1500);
+	const { activeColor, activeMode, times, handleModeChange } = useFont();
+	const [timeLeft, setTimeLeft] = useState(times[activeMode] * 60);
 	const [isRunning, setIsRunning] = useState(false);
+	const [pomodoroCount, setPomodoroCount] = useState(0);
+
+	// Reset timer when mode changes
+	useEffect(() => {
+		setTimeLeft(times[activeMode] * 60);
+		setIsRunning(false);
+	}, [activeMode, times]);
 
 	const minutes = Math.floor(timeLeft / 60);
 	const seconds = timeLeft % 60;
-	const progress = (timeLeft / 1500) * 100;
+	const totalSeconds = times[activeMode] * 60;
+	const progress = (timeLeft / totalSeconds) * 100;
 
 	useEffect(() => {
 		let interval: NodeJS.Timeout;
@@ -18,9 +26,27 @@ export const Clock = () => {
 			interval = setInterval(() => {
 				setTimeLeft(prev => prev - 1);
 			}, 1000);
+		} else if (timeLeft === 0) {
+			// Timer completed
+			if (activeMode === "pomodoro") {
+				// Increment pomodoro count
+				const newCount = pomodoroCount + 1;
+				setPomodoroCount(newCount);
+
+				// On 4th pomodoro, switch to long break
+				if (newCount % 4 === 0) {
+					handleModeChange("long break");
+				} else {
+					handleModeChange("short break");
+				}
+			} else if (activeMode === "short break" || activeMode === "long break") {
+				// After any break, go back to pomodoro
+				handleModeChange("pomodoro");
+			}
+			setIsRunning(false);
 		}
 		return () => clearInterval(interval);
-	}, [isRunning, timeLeft]);
+	}, [isRunning, timeLeft, activeMode, pomodoroCount, handleModeChange]);
 
 	const toggleTimer = () => {
 		setIsRunning(!isRunning);

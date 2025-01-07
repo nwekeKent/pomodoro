@@ -9,7 +9,6 @@ import { SettingsModal } from "@/components/settings/SettingsModal";
 
 export default function Home() {
 	const { activeFont, mounted } = useFont();
-	const [activeMode, setActiveMode] = useState("pomodoro");
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
 	const closeSettingsModal = () => {
@@ -32,7 +31,7 @@ export default function Home() {
 			<h3 className="text-secondary-grey text-2xl md:text-[32px] leading-normal font-kumbh font-bold text-center">
 				pomodoro
 			</h3>
-			<ModeSwitcher activeMode={activeMode} setActiveMode={setActiveMode} />
+			<ModeSwitcher />
 			<Clock />
 			<Image
 				src="/assets/icons/icon-settings.svg"
@@ -40,6 +39,7 @@ export default function Home() {
 				width={28}
 				height={28}
 				onClick={openSettingsModal}
+				className="cursor-pointer"
 			/>
 			{isSettingsModalOpen && (
 				<SettingsModal closeSettingsModal={closeSettingsModal} />
