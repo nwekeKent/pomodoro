@@ -39,8 +39,11 @@ export const Clock = () => {
 				} else {
 					handleModeChange("short break");
 				}
-			} else if (activeMode === "short break" || activeMode === "long break") {
-				// After any break, go back to pomodoro
+			} else if (activeMode === "long break") {
+				// Reset count after long break
+				setPomodoroCount(0);
+				handleModeChange("pomodoro");
+			} else if (activeMode === "short break") {
 				handleModeChange("pomodoro");
 			}
 			setIsRunning(false);
