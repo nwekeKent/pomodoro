@@ -10,6 +10,10 @@ This is a [Next.js](https://nextjs.org) project that implements a Pomodoro Timer
   - Short Break (default: 5 minutes)
   - Long Break (default: 15 minutes)
 
+- **Pomodoro Cycle:**
+
+  - Complete 4 Pomodoro sessions before switching to a long break
+
 - **Customization Options:**
 
   - Adjustable timer durations for each mode
