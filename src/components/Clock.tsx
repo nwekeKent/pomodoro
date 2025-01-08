@@ -56,24 +56,25 @@ export const Clock = () => {
 	};
 
 	return (
-		<div className="md:mt-12 mt-[109px] w-[300px] h-[300px] md:w-[410px] md:h-[410px] bg-custom-gradient  rounded-[410px] mb-[50px] p-4 shadow-custom-shadow flex justify-center items-center relative">
-			<div className="w-full h-full bg-secondary-navy-200 rounded-[100%] flex flex-col justify-center items-center relative">
+		<div className="md:mt-12 mt-[109px] w-[300px] h-[300px] md:w-[410px] md:h-[410px] bg-custom-gradient  rounded-[410px] mb-[50px] p-[22px] shadow-custom-shadow flex justify-center items-center relative">
+			<div className="w-full h-full bg-secondary-navy-200  rounded-[100%] flex flex-col justify-center items-center relative">
 				{/* Progress Ring */}
 				<div
-					className="absolute inset-0 rounded-full"
+					className="absolute left-3 top-3 right-3 bottom-3 inset-0 rounded-full"
 					style={{
 						background: `conic-gradient(var(--primary-${
 							activeColor || "red"
 						}) ${progress}%, transparent ${progress}%)`,
-						padding: "13px",
+						padding: "10px",
 						maskImage: "radial-gradient(transparent 65%, black 66%)",
 						WebkitMaskImage: "radial-gradient(transparent 65%, black 66%)",
 					}}
 				/>
 
 				{/* Timer Display */}
+
 				<div className="relative z-10 flex flex-col items-center">
-					<div className="text-[80px] md:text-[100px]  leading-normal text-secondary-grey font-bold">
+					<div className="text-[60px] md:text-[90px]  leading-normal text-secondary-grey font-bold">
 						{`${minutes.toString().padStart(2, "0")}:${seconds
 							.toString()
 							.padStart(2, "0")}`}
