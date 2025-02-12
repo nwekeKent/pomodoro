@@ -8,6 +8,49 @@ export const Clock = () => {
 	const [timeLeft, setTimeLeft] = useState(times[activeMode] * 60);
 	const [isRunning, setIsRunning] = useState(false);
 	const [pomodoroCount, setPomodoroCount] = useState(0);
+	const [shouldSwitchMode, setShouldSwitchMode] = useState(false);
+
+	// Add audio ref
+	const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+	// Initialize audio on mount
+	useEffect(() => {
+		audioRef.current = new Audio("/public/alarm.mp3"); // Make sure alarm.mp3 is directly in public folder
+	}, []);
+
+	const playAlarmSound = () => {
+		if (audioRef.current) {
+			audioRef.current.currentTime = 0; // Reset audio to start
+			audioRef.current
+				.play()
+				.catch(error => console.log("Audio play failed:", error));
+		}
+	};
+
+	// Timer effect
+	useEffect(() => {
+		let interval: NodeJS.Timeout;
+
+		if (isRunning && timeLeft > 0) {
+			interval = setInterval(() => {
+				setTimeLeft(prev => prev - 1);
+			}, 1000);
+		} else if (timeLeft === 0) {
+			setIsRunning(false);
+			playAlarmSound();
+
+			if (activeMode === "pomodoro") {
+				setPomodoroCount(prev => prev + 1);
+			} else if (activeMode === "long break") {
+				setPomodoroCount(0);
+			}
+			setShouldSwitchMode(true);
+		}
+
+		return () => {
+			clearInterval(interval);
+		};
+	}, [isRunning, timeLeft, activeMode]);
 
 	// Reset timer when mode changes
 	useEffect(() => {
@@ -15,41 +58,26 @@ export const Clock = () => {
 		setIsRunning(false);
 	}, [activeMode, times]);
 
-	const minutes = Math.floor(timeLeft / 60);
-	const seconds = timeLeft % 60;
-	const totalSeconds = times[activeMode] * 60;
-	const progress = (timeLeft / totalSeconds) * 100;
-
+	// Handle mode switching in a separate effect
 	useEffect(() => {
-		let interval: NodeJS.Timeout;
-		if (isRunning && timeLeft > 0) {
-			interval = setInterval(() => {
-				setTimeLeft(prev => prev - 1);
-			}, 1000);
-		} else if (timeLeft === 0) {
-			// Timer completed
+		if (shouldSwitchMode) {
 			if (activeMode === "pomodoro") {
-				// Increment pomodoro count
-				const newCount = pomodoroCount + 1;
-				setPomodoroCount(newCount);
-
-				// On 4th pomodoro, switch to long break
-				if (newCount % 4 === 0) {
+				if (pomodoroCount % 4 === 0) {
 					handleModeChange("long break");
 				} else {
 					handleModeChange("short break");
 				}
-			} else if (activeMode === "long break") {
-				// Reset count after long break
-				setPomodoroCount(0);
-				handleModeChange("pomodoro");
-			} else if (activeMode === "short break") {
+			} else if (activeMode === "long break" || activeMode === "short break") {
 				handleModeChange("pomodoro");
 			}
-			setIsRunning(false);
+			setShouldSwitchMode(false);
 		}
-		return () => clearInterval(interval);
-	}, [isRunning, timeLeft, activeMode, pomodoroCount, handleModeChange]);
+	}, [shouldSwitchMode, activeMode, pomodoroCount, handleModeChange]);
+
+	const minutes = Math.floor(timeLeft / 60);
+	const seconds = timeLeft % 60;
+	const totalSeconds = times[activeMode] * 60;
+	const progress = (timeLeft / totalSeconds) * 100;
 
 	const toggleTimer = () => {
 		setIsRunning(!isRunning);

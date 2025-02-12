@@ -4,15 +4,15 @@ import React from "react";
 import { useFont, type ModeOption } from "@/context/FontContext";
 
 export function ModeSwitcher() {
-	const { activeColor, activeMode, handleModeChange, mounted } = useFont();
+	const { activeColor, activeMode, handleModeChange } = useFont();
 	const modes: ModeOption[] = ["pomodoro", "short break", "long break"];
 
-	if (!mounted) return null;
+	console.log("Current mode:", activeMode);
 
 	return (
 		<div className="w-full mt-[45px] md:mt-[58px] max-w-[373px] h-16 flex justify-between rounded-[32px] bg-secondary-navy-200 p-2">
 			{modes.map(mode => (
-				<div
+				<button
 					key={mode}
 					className={`h-full px-4 flex justify-center text-center items-center font-bold text-xs md:text-sm rounded-[27px] cursor-pointer ${
 						activeMode === mode
@@ -22,7 +22,7 @@ export function ModeSwitcher() {
 					onClick={() => handleModeChange(mode)}
 				>
 					{mode}
-				</div>
+				</button>
 			))}
 		</div>
 	);

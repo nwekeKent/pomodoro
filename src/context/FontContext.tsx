@@ -50,12 +50,15 @@ export function FontProvider({ children }: { children: ReactNode }) {
 			const storedFont = (localStorage.getItem("font") || "mono") as FontOption;
 			const storedColor = (localStorage.getItem("color") ||
 				"red") as ColorOption;
+			const storedMode = (localStorage.getItem("mode") ||
+				"pomodoro") as ModeOption;
 			const storedTimes = JSON.parse(
 				localStorage.getItem("times") || JSON.stringify(DEFAULT_TIMES)
 			) as TimeSettings;
 
 			setActiveFont(storedFont);
 			setActiveColor(storedColor);
+			setActiveMode(storedMode);
 			setTimes(storedTimes);
 			setMounted(true);
 		}
@@ -76,7 +79,9 @@ export function FontProvider({ children }: { children: ReactNode }) {
 	};
 
 	const handleModeChange = (mode: ModeOption) => {
+		console.log("Mode changing to:", mode);
 		setActiveMode(mode);
+		localStorage.setItem("mode", mode);
 	};
 
 	const handleTimeChange = (mode: ModeOption, minutes: number) => {
