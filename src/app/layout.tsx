@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { roboto, mono, kumbh } from "@/utils/fonts";
-import { FontProvider } from "@/context/FontContext";
+import { AppProvider } from "@/context/AppContext";
 
 export const metadata: Metadata = {
 	title: "Pomodoro Timer",
@@ -23,7 +23,7 @@ export default function RootLayout({
 				suppressHydrationWarning
 				className="min-w-screen bg-secondary-navy-100"
 			>
-				<FontProvider>{children}</FontProvider>
+				<AppProvider>{children}</AppProvider>
 			</body>
 		</html>
 	);

@@ -2,13 +2,13 @@
 
 import { Clock } from "@/components/Clock";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
-import { useFont } from "@/context/FontContext";
+import { useAppContext } from "@/context/AppContext";
 import { useState } from "react";
 import Image from "next/image";
 import { SettingsModal } from "@/components/settings/SettingsModal";
 
 export default function Home() {
-	const { activeFont, mounted } = useFont();
+	const { activeFont, mounted } = useAppContext();
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
 	const closeSettingsModal = () => {

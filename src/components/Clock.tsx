@@ -1,31 +1,20 @@
 "use client";
 
-import { useFont } from "@/context/FontContext";
+import { useAppContext } from "@/context/AppContext";
 import React, { useState, useEffect } from "react";
 
 export const Clock = () => {
-	const { activeColor, activeMode, times, handleModeChange } = useFont();
+	const { activeColor, activeMode, times, handleModeChange } = useAppContext();
 	const [timeLeft, setTimeLeft] = useState(times[activeMode] * 60);
 	const [isRunning, setIsRunning] = useState(false);
 	const [pomodoroCount, setPomodoroCount] = useState(0);
 	const [shouldSwitchMode, setShouldSwitchMode] = useState(false);
 
-	// Add audio ref
-	const audioRef = React.useRef<HTMLAudioElement | null>(null);
-
-	// Initialize audio on mount
+	// Reset timer when mode or times change
 	useEffect(() => {
-		audioRef.current = new Audio("/public/alarm.mp3"); // Make sure alarm.mp3 is directly in public folder
-	}, []);
-
-	const playAlarmSound = () => {
-		if (audioRef.current) {
-			audioRef.current.currentTime = 0; // Reset audio to start
-			audioRef.current
-				.play()
-				.catch(error => console.log("Audio play failed:", error));
-		}
-	};
+		setTimeLeft(times[activeMode] * 60);
+		setIsRunning(false);
+	}, [activeMode, times]);
 
 	// Timer effect
 	useEffect(() => {
@@ -35,28 +24,21 @@ export const Clock = () => {
 			interval = setInterval(() => {
 				setTimeLeft(prev => prev - 1);
 			}, 1000);
-		} else if (timeLeft === 0) {
+		} else if (timeLeft === 0 && isRunning) {
 			setIsRunning(false);
-			playAlarmSound();
 
+			// Switch modes
 			if (activeMode === "pomodoro") {
 				setPomodoroCount(prev => prev + 1);
-			} else if (activeMode === "long break") {
-				setPomodoroCount(0);
+				const nextMode = pomodoroCount % 4 === 3 ? "long break" : "short break";
+				handleModeChange(nextMode);
+			} else {
+				handleModeChange("pomodoro");
 			}
-			setShouldSwitchMode(true);
 		}
 
-		return () => {
-			clearInterval(interval);
-		};
-	}, [isRunning, timeLeft, activeMode]);
-
-	// Reset timer when mode changes
-	useEffect(() => {
-		setTimeLeft(times[activeMode] * 60);
-		setIsRunning(false);
-	}, [activeMode, times]);
+		return () => clearInterval(interval);
+	}, [isRunning, timeLeft, activeMode, pomodoroCount, handleModeChange]);
 
 	// Handle mode switching in a separate effect
 	useEffect(() => {
@@ -88,6 +70,7 @@ export const Clock = () => {
 			<div className="w-full h-full bg-secondary-navy-200  rounded-[100%] flex flex-col justify-center items-center relative">
 				{/* Progress Ring */}
 				<div
+					data-testid="progress-ring"
 					className="absolute left-3 top-3 right-3 bottom-3 inset-0 rounded-full"
 					style={{
 						background: `conic-gradient(var(--primary-${

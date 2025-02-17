@@ -3,10 +3,10 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import {
-	useFont,
+	useAppContext,
 	type FontOption,
 	type ColorOption,
-} from "@/context/FontContext";
+} from "@/context/AppContext";
 import { NumberInput } from "./NumberInput";
 
 export const Modal = ({
@@ -21,7 +21,7 @@ export const Modal = ({
 		handleFontChange,
 		handleColorChange,
 		handleTimeChange,
-	} = useFont();
+	} = useAppContext();
 
 	const [selectedFont, setSelectedFont] = useState<FontOption>(activeFont);
 	const [selectedColor, setSelectedColor] = useState<ColorOption>(activeColor);
@@ -64,13 +64,18 @@ export const Modal = ({
 				<h1 className="text-secondary-navy-200 text-[24px] leading-normal font-bold">
 					Settings
 				</h1>
-				<Image
-					src="/assets/icons/icon-close.svg"
-					width={14}
-					height={14}
-					alt="icon-close"
+				<button
 					onClick={closeSettingsModal}
-				/>
+					aria-label="Close settings"
+					className="cursor-pointer"
+				>
+					<Image
+						src="/assets/icons/icon-close.svg"
+						alt="Close settings"
+						width={14}
+						height={14}
+					/>
+				</button>
 			</header>
 
 			<div className="md:px-10 px-6">
@@ -140,7 +145,7 @@ export const Modal = ({
 											src="/assets/icons/icon-tick.png"
 											width={15}
 											height={15}
-											alt="icon-close"
+											alt="selected option"
 										/>
 									)}
 								</div>
